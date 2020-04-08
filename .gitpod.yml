@@ -1,0 +1,5 @@
+vscode:
+  extensions:
+    - ms-vscode.cpptools@0.27.0:REl09N7sILsZm63knShmNw==
+image:
+  file: .gitpod.dockerfile
