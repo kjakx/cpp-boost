@@ -2,20 +2,9 @@
 using namespace std;
 
 int main()
-{   
-    int n, a;
-    int bitsum = 0;
-    int count = 0;
-    cin >> n;
-    for (int i = 0; i < n; i++)
-    {
-        cin >> a;
-        bitsum |= a;
-    }
-    while (!(bitsum & 1))
-    {
-        count++;
-        bitsum >>= 1;
-    }
-    cout << count << endl;
+{
+    int a, b, c; cin >> a >> b >> c;
+    int noppo = max(a, max(b, c));
+    int chibi = min(a, min(b, c));
+    cout << noppo - chibi << endl;
 }
