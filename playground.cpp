@@ -1,56 +1,64 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// 参照渡しを用いて、呼び出し側の変数の値を変更する
-void saiten(vector<vector<int>>& a, int& correct_count, int& wrong_count) {
-  // 呼び出し側のAの各マスを正しい値に修正する
-  // Aのうち、正しい値の書かれたマスの個数を correct_count に入れる
-  // Aのうち、誤った値の書かれたマスの個数を wrong_count に入れる
+bool is_reachable(vector<vector<char>>&, vector<vector<bool>>&, int, int, const int&, const int&);
+bool within_map(int i, int j, const int h, const int w);
 
-  // ここにプログラムを追記
-  for (int i = 0; i < 9; i++)
-  {
-      for (int j = 0; j < 9; j++)
-      {
-          if (a[i][j] != (i+1)*(j+1))
-          {
-              wrong_count++;
-              a[i][j] = (i+1)*(j+1);
-          }
-          else correct_count++;
-      }
-  }
+int main()
+{
+    int h, w;
+    cin >> h;
+    cin >> w;
+    vector<vector<char>> map(h, vector<char>(w));
+    int start_i, start_j;
+    for (int i = 0; i < h; i++)
+    {
+        for (int j = 0; j < w; j++)
+        {
+            cin >> map[i][j];
+            if (map[i][j] == 's')
+            {
+                start_i = i;
+                start_j = j;
+            };
+        }
+    }
+    vector<vector<bool>> visited(h, vector<bool>(w, false));
+    if (is_reachable(map, visited, start_i, start_j, h, w))
+    {
+        cout << "Yes" << endl;
+        return 0;
+    }
+    cout << "No" << endl;
+    return 0;
 }
 
-
-// -------------------
-// ここから先は変更しない
-// -------------------
-int main() {
-  // A君の回答を受け取る
-  vector<vector<int>> A(9, vector<int>(9));
-  for (int i = 0; i < 9; i++) {
-    for (int j = 0; j < 9; j++) {
-      cin >> A.at(i).at(j);
+bool is_reachable(vector<vector<char>>& map, vector<vector<bool>>& visited, int i, int j, const int& h, const int& w)
+{
+    if (map[i][j] == 'g') return true;
+    visited[i][j] = true;
+    bool reachable = false;
+    if (within_map(i-1, j, h, w) && map[i-1][j] != '#' && visited[i-1][j] == false)
+    {
+        reachable |= is_reachable(map, visited, i-1, j, h, w);
     }
-  }
-
-  int correct_count = 0; // ここに正しい値のマスの個数を入れる
-  int wrong_count = 0;   // ここに誤った値のマスの個数を入れる
-
-  // A, correct_count, wrong_countを参照渡し
-  saiten(A, correct_count, wrong_count);
-
-  // 正しく修正した表を出力
-  for (int i = 0; i < 9; i++) {
-    for (int j = 0; j < 9; j++) {
-      cout << A.at(i).at(j);
-      if (j < 8) cout << " ";
-      else cout << endl;
+    if (within_map(i+1, j, h, w) && map[i+1][j] != '#' && visited[i+1][j] == false)
+    {
+        reachable |= is_reachable(map, visited, i+1, j, h, w);
     }
-  }
-  // 正しいマスの個数を出力
-  cout << correct_count << endl;
-  // 誤っているマスの個数を出力
-  cout << wrong_count << endl;
+    if (within_map(i, j-1, h, w) && map[i][j-1] != '#' && visited[i][j-1] == false)
+    {
+        reachable |= is_reachable(map, visited, i, j-1, h, w);
+    }
+    if (within_map(i, j+1, h, w) && map[i][j+1] != '#' && visited[i][j+1] == false)
+    {
+        reachable |= is_reachable(map, visited, i, j+1, h, w);
+    }
+    return reachable;
+}
+
+bool within_map(int i, int j, const int h, const int w)
+{
+    if (i < 0 || i >= h || j < 0 || j >= w) return false;
+    return true;
 }
