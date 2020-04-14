@@ -1,64 +1,58 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-bool is_reachable(vector<vector<char>>&, vector<vector<bool>>&, int, int, const int&, const int&);
-bool within_map(int i, int j, const int h, const int w);
+void print_seven(string& n);
+bool eq_seven(string& n, char op, string eq, int val, int depth);
 
 int main()
 {
-    int h, w;
-    cin >> h;
-    cin >> w;
-    vector<vector<char>> map(h, vector<char>(w));
-    int start_i, start_j;
-    for (int i = 0; i < h; i++)
-    {
-        for (int j = 0; j < w; j++)
-        {
-            cin >> map[i][j];
-            if (map[i][j] == 's')
-            {
-                start_i = i;
-                start_j = j;
-            };
-        }
-    }
-    vector<vector<bool>> visited(h, vector<bool>(w, false));
-    if (is_reachable(map, visited, start_i, start_j, h, w))
-    {
-        cout << "Yes" << endl;
-        return 0;
-    }
-    cout << "No" << endl;
+    string n;
+    cin >> n;
+    print_seven(n);
     return 0;
 }
 
-bool is_reachable(vector<vector<char>>& map, vector<vector<bool>>& visited, int i, int j, const int& h, const int& w)
+bool eq_seven(string& n, char op, string eq, int val, int depth)
 {
-    if (map[i][j] == 'g') return true;
-    visited[i][j] = true;
-    bool reachable = false;
-    if (within_map(i-1, j, h, w) && map[i-1][j] != '#' && visited[i-1][j] == false)
+    bool found = false;
+    if (depth == 0)
     {
-        reachable |= is_reachable(map, visited, i-1, j, h, w);
+        val = n[0] - '0';
+        eq += n[0];
     }
-    if (within_map(i+1, j, h, w) && map[i+1][j] != '#' && visited[i+1][j] == false)
+    depth++;
+    if (op == '+')
     {
-        reachable |= is_reachable(map, visited, i+1, j, h, w);
+        val += n[depth] - '0';
+        eq += "+";
+        eq += n[depth];
     }
-    if (within_map(i, j-1, h, w) && map[i][j-1] != '#' && visited[i][j-1] == false)
+    if (op == '-')
     {
-        reachable |= is_reachable(map, visited, i, j-1, h, w);
+        val -= n[depth] - '0';
+        eq += "-";
+        eq += n[depth];
     }
-    if (within_map(i, j+1, h, w) && map[i][j+1] != '#' && visited[i][j+1] == false)
+    if (depth == 3)
     {
-        reachable |= is_reachable(map, visited, i, j+1, h, w);
+        if (val == 7)
+        {
+            cout << eq << "=7" << endl;
+            found |= true;
+        }
     }
-    return reachable;
+    else
+    {
+        if (found) return true;
+        found |= eq_seven(n, '+', eq, val, depth);
+        if (found) return true;
+        found |= eq_seven(n, '-', eq, val, depth);      
+    }
+    return found;
 }
 
-bool within_map(int i, int j, const int h, const int w)
+void print_seven(string& n)
 {
-    if (i < 0 || i >= h || j < 0 || j >= w) return false;
-    return true;
+    if(!eq_seven(n, '+', "", 0, 0)) 
+        eq_seven(n, '-', "", 0, 0);
 }
