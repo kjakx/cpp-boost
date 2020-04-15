@@ -1,58 +1,68 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-void print_seven(string& n);
-bool eq_seven(string& n, char op, string eq, int val, int depth);
+int min_problems(vector<bool>, int, int, int);
+int d, g;
+int max_problems;
+vector<int> p;
+vector<int> bonus;
 
 int main()
 {
-    string n;
-    cin >> n;
-    print_seven(n);
+    cin >> d >> g;
+    p.resize(d+1, 0);
+    bonus.resize(d+1, 0);
+    vector<bool> solved(d+1, false);
+    max_problems = 0;
+    for (int i = 1; i <= d; i++)
+    {
+        cin >> p[i] >> bonus[i];
+        max_problems += p[i];
+    }
+    int problems = max_problems;
+    for (int i = 0; i <= d; i++)
+    {
+        problems = min(problems, min_problems(solved, i, 0, 0));
+    }
+    cout << problems << endl;
     return 0;
 }
 
-bool eq_seven(string& n, char op, string eq, int val, int depth)
+int min_problems(vector<bool> solved, int pid, int score, int problems)
 {
-    bool found = false;
-    if (depth == 0)
+    int problems_goal = max_problems;
+    score += p[pid] * pid * 100 + bonus[pid];
+    problems += p[pid];
+    solved[pid] = true;
+    if (score < g)
     {
-        val = n[0] - '0';
-        eq += n[0];
-    }
-    depth++;
-    if (op == '+')
-    {
-        val += n[depth] - '0';
-        eq += "+";
-        eq += n[depth];
-    }
-    if (op == '-')
-    {
-        val -= n[depth] - '0';
-        eq += "-";
-        eq += n[depth];
-    }
-    if (depth == 3)
-    {
-        if (val == 7)
+        int max_unsolved_pid = 0;
+        for (int i = d; i >= 1; i--)
         {
-            cout << eq << "=7" << endl;
-            found |= true;
+            if (solved[i] == false)
+            {
+                max_unsolved_pid = i;
+                break;
+            }
+        }
+        for (int i = 1; i < p[max_unsolved_pid]; i++)
+        {
+            if (score + i * max_unsolved_pid * 100 >= g)
+            {
+                score += i * max_unsolved_pid * 100;
+                problems += i;
+                problems_goal = problems;
+                break;
+            }
         }
     }
-    else
+    else problems_goal = problems;
+    if (score < g)
     {
-        if (found) return true;
-        found |= eq_seven(n, '+', eq, val, depth);
-        if (found) return true;
-        found |= eq_seven(n, '-', eq, val, depth);      
+        for (int i = pid+1; i <= d; i++)
+        {
+            problems_goal = min(problems_goal, min_problems(solved, i, score, problems));
+        }
     }
-    return found;
-}
-
-void print_seven(string& n)
-{
-    if(!eq_seven(n, '+', "", 0, 0)) 
-        eq_seven(n, '-', "", 0, 0);
+    return problems_goal;
 }
