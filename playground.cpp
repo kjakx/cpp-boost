@@ -1,68 +1,46 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int min_problems(vector<bool>, int, int, int);
-int d, g;
-int max_problems;
-vector<int> p;
-vector<int> bonus;
+int min_time(vector<bool>, int);
+int n;
+int max_time;
+vector<int> t;
 
 int main()
 {
-    cin >> d >> g;
-    p.resize(d+1, 0);
-    bonus.resize(d+1, 0);
-    vector<bool> solved(d+1, false);
-    max_problems = 0;
-    for (int i = 1; i <= d; i++)
+    cin >> n;
+    t.resize(n);
+    max_time = 0;
+    for (int i = 0; i < n; i++) 
     {
-        cin >> p[i] >> bonus[i];
-        max_problems += p[i];
+        cin >> t[i];
+        max_time += t[i];
     }
-    int problems = max_problems;
-    for (int i = 0; i <= d; i++)
-    {
-        problems = min(problems, min_problems(solved, i, 0, 0));
-    }
-    cout << problems << endl;
-    return 0;
+    vector<bool> flags(n, false);
+    int time = max_time;
+    time = min_time(flags, 0);
+    flags[0] = true;
+    time = min(time, min_time(flags, 0));
+    cout << time << endl;
 }
 
-int min_problems(vector<bool> solved, int pid, int score, int problems)
+int min_time(vector<bool> flags, int depth)
 {
-    int problems_goal = max_problems;
-    score += p[pid] * pid * 100 + bonus[pid];
-    problems += p[pid];
-    solved[pid] = true;
-    if (score < g)
+    int m1_time = 0, m2_time = 0;
+    for (int i = 0; i < n; i++)
     {
-        int max_unsolved_pid = 0;
-        for (int i = d; i >= 1; i--)
-        {
-            if (solved[i] == false)
-            {
-                max_unsolved_pid = i;
-                break;
-            }
-        }
-        for (int i = 1; i < p[max_unsolved_pid]; i++)
-        {
-            if (score + i * max_unsolved_pid * 100 >= g)
-            {
-                score += i * max_unsolved_pid * 100;
-                problems += i;
-                problems_goal = problems;
-                break;
-            }
-        }
+        if (flags[i] == true)
+            m1_time += t[i];
+        else
+            m2_time += t[i];
     }
-    else problems_goal = problems;
-    if (score < g)
+    int time = max(m1_time, m2_time);
+    for (int i = depth + 1; i < n; i++)
     {
-        for (int i = pid+1; i <= d; i++)
-        {
-            problems_goal = min(problems_goal, min_problems(solved, i, score, problems));
-        }
+        time = min(time, min_time(flags, i));
+        flags[i] = true;
+        time = min(time, min_time(flags, i));
+        flags[i] = false;
     }
-    return problems_goal;
+    return time;
 }
