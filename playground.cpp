@@ -1,46 +1,47 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int min_time(vector<bool>, int);
-int n;
-int max_time;
-vector<int> t;
+int count_friends(vector<int>&, int);
+int n, m;
+int ans = 0;
+vector<vector<bool>> are_friends;
 
 int main()
 {
-    cin >> n;
-    t.resize(n);
-    max_time = 0;
-    for (int i = 0; i < n; i++) 
+    cin >> n >> m;
+    are_friends.resize(n, vector<bool>(n, false));
+    for (int i = 0; i < m; i++)
     {
-        cin >> t[i];
-        max_time += t[i];
+        int x, y;
+        cin >> x >> y;
+        are_friends[x - 1][y - 1] = true;
+        are_friends[y - 1][x - 1] = true;
     }
-    vector<bool> flags(n, false);
-    int time = max_time;
-    time = min_time(flags, 0);
-    flags[0] = true;
-    time = min(time, min_time(flags, 0));
-    cout << time << endl;
+    vector<int> friends;
+    int max_friend_num = count_friends(friends, 0);
+    cout << max_friend_num << endl;
 }
 
-int min_time(vector<bool> flags, int depth)
+int count_friends(vector<int>& friends, int depth)
 {
-    int m1_time = 0, m2_time = 0;
-    for (int i = 0; i < n; i++)
+    if (depth == n)
     {
-        if (flags[i] == true)
-            m1_time += t[i];
-        else
-            m2_time += t[i];
+        for (int i = 0; i < int(friends.size()) - 1; i++)
+        {
+            for (int j = i + 1; j < int(friends.size()); j++)
+            {
+                if (!are_friends[friends[i]][friends[j]]) return 0;
+            }
+        }
+        ans = max(ans, int(friends.size()));
+        // cout << ans << endl;
     }
-    int time = max(m1_time, m2_time);
-    for (int i = depth + 1; i < n; i++)
+    else
     {
-        time = min(time, min_time(flags, i));
-        flags[i] = true;
-        time = min(time, min_time(flags, i));
-        flags[i] = false;
+        ans = max(ans, count_friends(friends, depth+1));
+        friends.push_back(depth);
+        ans = max(ans, count_friends(friends, depth+1));
+        friends.pop_back();
     }
-    return time;
+    return ans;
 }
