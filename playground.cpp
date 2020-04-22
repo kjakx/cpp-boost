@@ -3,42 +3,32 @@ using namespace std;
 
 int main()
 {
-    char c[4];
-    cin >> c;
-    int sum = c[0] - '0';
-    char eq[9];
-    eq[0] = c[0];
-    for (int tmp = 0; tmp < (1 << 3); tmp++)
+    int n;
+    cin >> n;
+    vector<int> t(n);
+    for (int i = 0; i < n; i++)
     {
-        bitset<3> bs(tmp);
-        for (int i = 0; i < 3; i++)
+        cin >> t[i];
+    }
+    int min_time = 100000001;
+    for (int tmp = 0; tmp < (1 << n); tmp++)
+    {
+        int time = 0;
+        int t1 = 0, t2 = 0;
+        bitset<4> bs(tmp);
+        for (int i = 0; i < n; i++)
         {
             if (bs.test(i) == true)
             {
-                sum += c[i+1] - '0';
-                eq[2*i+1] = '+';
-                eq[2*i+2] = c[i+1];
+                t1 += t[i];
             }
             else
             {
-                sum -= c[i+1] - '0';
-                eq[2*i+1] = '-';
-                eq[2*i+2] = c[i+1];
+                t2 += t[i];
             }
         }
-        if (sum == 7) 
-        {
-            eq[7] = '='; eq[8] = '7';
-            break;
-        }
-        else
-        {
-            sum = c[0] - '0';
-        }
+        time = max(t1, t2);
+        min_time = min(time, min_time);
     }
-    for (int i = 0; i < 9; i++)
-    {
-        cout << eq[i];
-    }
-    cout << endl;
+    cout << min_time << endl;
 }
