@@ -3,32 +3,39 @@ using namespace std;
 
 int main()
 {
-    int n;
-    cin >> n;
-    vector<int> t(n);
-    for (int i = 0; i < n; i++)
+    int n, m;
+    cin >> n >> m;
+    vector<vector<bool>> arefriends(n, vector<bool>(n, false));
+    for (int i = 0; i < m; i++)
     {
-        cin >> t[i];
+        int x, y;
+        cin >> x >> y;
+        arefriends[x-1][y-1] = true;
+        arefriends[y-1][x-1] = true;
     }
-    int min_time = 100000001;
+    int max_friends = 1;
     for (int tmp = 0; tmp < (1 << n); tmp++)
     {
-        int time = 0;
-        int t1 = 0, t2 = 0;
-        bitset<4> bs(tmp);
-        for (int i = 0; i < n; i++)
+        bitset<12> bs(tmp);
+        int i, j;
+        int areallfriends = true;
+        for (i = 0; i < n - 1; i++)
         {
-            if (bs.test(i) == true)
+            for (j = i + 1; j < n; j++)
             {
-                t1 += t[i];
+                if (bs.test(i) && bs.test(j))
+                {
+                    if (arefriends[i][j] == false) 
+                    {
+                        areallfriends = false;
+                        break;
+                    }
+                }
             }
-            else
-            {
-                t2 += t[i];
-            }
+            if (areallfriends == false) break;
         }
-        time = max(t1, t2);
-        min_time = min(time, min_time);
+        if (areallfriends == true) 
+            max_friends = max((int)bs.count(), max_friends);
     }
-    cout << min_time << endl;
+    cout << max_friends << endl;
 }
