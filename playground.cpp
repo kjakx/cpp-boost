@@ -4,7 +4,7 @@ using namespace std;
 #define rep2(i, s, n) for (int i = (s); i < (int)(n); i++)
 #define all(v) v.begin(), v.end()
 
-int max_id_under(long m, vector<long>& p)
+long max_under(long m, vector<long>& p)
 {
     int max_id_under_m;
     int left = 0; int right = p.size() - 1;
@@ -21,7 +21,7 @@ int max_id_under(long m, vector<long>& p)
             left = max_id_under_m + 1;
         }
     }
-    return max_id_under_m;
+    return p[max_id_under_m];
 }
 
 int main()
@@ -29,12 +29,10 @@ int main()
     long n, m; cin >> n >> m;
     vector<long> p(n+1); p[0] = 0;
     rep2 (i, 1, n+1) cin >> p[i];
-    sort(all(p));
-    int max_id_under_m = max_id_under(m, p);
     vector<long> all_total;
-    rep(i, max_id_under_m+1)
+    rep(i, n+1)
     {
-        rep(j, max_id_under_m+1)
+        rep(j, n+1)
         {
             long total = p[i] + p[j];
             if (total <= m)
@@ -45,7 +43,7 @@ int main()
     long max_total = 0;
     rep(i, all_total.size())
     {
-        long total = all_total[i] + all_total[max_id_under(m - all_total[i], all_total)];
+        long total = all_total[i] + max_under(m - all_total[i], all_total);
         if (total <= m)
             max_total = max(total, max_total);
     }
