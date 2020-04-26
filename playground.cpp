@@ -4,18 +4,50 @@ using namespace std;
 #define rep2(i, s, n) for (int i = (s); i < (int)(n); i++)
 #define all(v) v.begin(), v.end()
 
+int max_id_under(long m, vector<long>& p)
+{
+    int max_id_under_m;
+    int left = 0; int right = p.size() - 1;
+    while (left <= right)
+    {
+        max_id_under_m = left + (right - left) / 2;
+        if (p[max_id_under_m] == m) break;
+        if (p[max_id_under_m] > m)
+        {
+            right = max_id_under_m - 1;
+        }
+        else
+        {
+            left = max_id_under_m + 1;
+        }
+    }
+    return max_id_under_m;
+}
+
 int main()
 {
-    int n, k; cin >> n >> k;
-    vector<string> cards(n);
-    rep (i, n) cin >> cards[i];
-    sort(all(cards));
-    set<int> s;
-    do
+    long n, m; cin >> n >> m;
+    vector<long> p(n+1); p[0] = 0;
+    rep2 (i, 1, n+1) cin >> p[i];
+    sort(all(p));
+    int max_id_under_m = max_id_under(m, p);
+    vector<long> all_total;
+    rep(i, max_id_under_m+1)
     {
-        string s_tmp = "";
-        rep (i, k) s_tmp += cards[i];
-        s.insert(stoi(s_tmp));
-    } while(next_permutation(all(cards)));
-    cout << s.size() << endl;
+        rep(j, max_id_under_m+1)
+        {
+            long total = p[i] + p[j];
+            if (total <= m)
+                all_total.push_back(total);
+        }
+    }
+    sort(all(all_total));
+    long max_total = 0;
+    rep(i, all_total.size())
+    {
+        long total = all_total[i] + all_total[max_id_under(m - all_total[i], all_total)];
+        if (total <= m)
+            max_total = max(total, max_total);
+    }
+    cout << max_total << endl;
 }
