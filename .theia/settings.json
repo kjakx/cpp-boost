@@ -1,5 +1,5 @@
 {
     "C_Cpp.errorSquiggles": "Disabled",
-    "editor.quickSuggestions": false,
+    "C_Cpp.intelliSenseEngine": "Disabled",
     "editor.acceptSuggestionOnEnter": "off"
 }

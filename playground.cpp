@@ -6,29 +6,21 @@ using namespace std;
 
 int main()
 {
-    long n, m;
-    cin >> n >> m;
-    vector<long> p(n + 1);
-    p[0] = 0;
-    rep2(i, 1, n + 1) cin >> p[i];
-    vector<long> all_total;
+    int n, y;
+    cin >> n >> y;
     rep(i, n + 1)
     {
-        rep(j, n + 1)
+        rep(j, n + 1 - i)
         {
-            long total = p[i] + p[j];
-            if (total <= m)
-                all_total.push_back(total);
+            int y_tmp = y;
+            y_tmp -= i * 10000;
+            y_tmp -= j * 5000;
+            if (y_tmp >= 0 && i + j + (y_tmp / 1000) == n)
+            {
+                cout << i << " " << j << " " << (y_tmp / 1000) << endl;
+                return 0;
+            }
         }
     }
-    sort(all(all_total));
-    long max_total = 0;
-    rep(i, all_total.size())
-    {
-        auto lb = lower_bound(all(all_total), m - all_total[i]);
-        if (m - all_total[i] < *lb) lb--;
-        long total = all_total[i] + *lb;
-        max_total = max(total, max_total);
-    }
-    cout << max_total << endl;
+    cout << "-1 -1 -1" << endl;
 }
