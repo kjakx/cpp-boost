@@ -3,24 +3,50 @@ using namespace std;
 #define rep(i, n) for (int i = 0; i < (int)(n); i++)
 #define rep2(i, s, n) for (int i = (s); i < (int)(n); i++)
 #define all(v) v.begin(), v.end()
+#define println(x) cout << x << endl
+
+int h, w;
+vector<vector<char>> grid;
+
+bool isroad(int i, int j)
+{
+    if (i < 0 || i >= h) return false;
+    if (j < 0 || j >= w) return false;
+    if (grid[i][j] == '#') return false;
+    return true;
+}
+
+bool dfs(int i, int j)
+{
+    if (grid[i][j] == 'g') return true;
+    bool res = false;
+    grid[i][j] = '#';
+    if (res == false && isroad(i-1, j)) res |= dfs(i-1, j);
+    if (res == false && isroad(i, j+1)) res |= dfs(i, j+1);
+    if (res == false && isroad(i+1, j)) res |= dfs(i+1, j);
+    if (res == false && isroad(i, j-1)) res |= dfs(i, j-1);
+    //grid[i][j] = '.';
+    return res;
+}
 
 int main()
 {
-    int n, y;
-    cin >> n >> y;
-    rep(i, n + 1)
+    cin >> h >> w;
+    grid.resize(h, vector<char>(w));
+    int si, sj;
+    rep(i, h)
     {
-        rep(j, n + 1 - i)
+        rep(j, w)
         {
-            int y_tmp = y;
-            y_tmp -= i * 10000;
-            y_tmp -= j * 5000;
-            if (y_tmp >= 0 && i + j + (y_tmp / 1000) == n)
+            cin >> grid[i][j];
+            if (grid[i][j] == 's')
             {
-                cout << i << " " << j << " " << (y_tmp / 1000) << endl;
-                return 0;
+                si = i;
+                sj = j;
             }
         }
     }
-    cout << "-1 -1 -1" << endl;
+    bool res = dfs(si, sj);
+    if (res == true) cout << "Yes" << endl;
+    else             cout << "No"  << endl;
 }
