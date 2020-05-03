@@ -15,54 +15,84 @@ const int dj[8] = {0, 1, 0, -1, -1, 1, 1, -1};
 
 using pii = pair<int, int>;
 
-int h, w;
-
-bool on_grid(int i, int j)
+bool on_grid(int i, int j, vector<vector<char>>& grid)
 {
-    if (i < 0 || i >= h) return false;
-    if (j < 0 || j >= w) return false;
+    if (i < 0 || i >= grid.size()) return false;
+    if (j < 0 || j >= grid[i].size()) return false;
     return true;
 }
 
 bool is_road(int i, int j, vector<vector<char>>& grid)
 {
-    if (on_grid(i, j) == false) return false;
+    if (on_grid(i, j, grid) == false) return false;
     if (grid[i][j] == '#') return false;
     return true;
 }
 
+bool is_wall(int i, int j, vector<vector<char>>& grid)
+{
+    if (on_grid(i, j, grid) == false) return false;
+    if (grid[i][j] == '#') return true;
+    return false;
+}
+
 int main()
 {
+    int h, w;
     cin >> h >> w;
     vector<vector<char>> grid(h, vector<char>(w));
-    vector<vector<int>> t(h, vector<int>(w, -1));
+    vector<vector<int>> hp(h, vector<int>(w, -1));
     queue<pii> q;
+    pii g;
     rep(i, h)rep(j, w)
     {
         char ch; cin >> ch;
-        if (ch == '#')
+        if (ch == 's') 
         {
             q.push(pii(i, j));
-            t[i][j] = 0;
+            hp[i][j] = 2;
+        }
+        if (ch == 'g')
+        {
+            g = pii(i, j);
         }
         grid[i][j] = ch;
     }
     while (!q.empty())
     {
         pii p = q.front(); q.pop();
+        if (p == g) break;
         rep(k, 4)
         {
-            if (is_road(p.fi+di[k], p.se+dj[k], grid) && t[p.fi+di[k]][p.se+dj[k]] == -1)
+            if (is_road(p.fi+di[k], p.se+dj[k], grid))
             {
-                q.push(pii(p.fi+di[k], p.se+dj[k]));
-                t[p.fi+di[k]][p.se+dj[k]] = t[p.fi][p.se] + 1;
+                if (hp[p.fi+di[k]][p.se+dj[k]] < hp[p.fi][p.se])
+                {
+                    q.push(pii(p.fi+di[k], p.se+dj[k]));
+                    hp[p.fi+di[k]][p.se+dj[k]] = hp[p.fi][p.se];
+                }
+            }
+            else if (is_wall(p.fi+di[k], p.se+dj[k], grid))
+            {
+                if (hp[p.fi][p.se] > 0 && hp[p.fi+di[k]][p.se+dj[k]] < hp[p.fi][p.se] - 1)
+                {
+                    q.push(pii(p.fi+di[k], p.se+dj[k]));
+                    hp[p.fi+di[k]][p.se+dj[k]] = hp[p.fi][p.se] - 1;
+                }
             }
         }
     }
-    int max_manip = 0;
-    rep(i, h)rep(j, w)
+    /* print hp on grid
+    rep(i, h)
     {
-        max_manip = max(max_manip, t[i][j]);
+        rep(j, w)
+        {
+            if (hp[i][j] == -1) cout << 'X';
+            else cout << hp[i][j];
+        }
+        cout << endl;
     }
-    println(max_manip);
+    */
+    if (hp[g.fi][g.se] >= 0) YES;
+    else NO;
 }
