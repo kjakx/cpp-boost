@@ -27,46 +27,43 @@ bool on_grid(int i, int j)
 bool is_road(int i, int j, vector<vector<char>>& grid)
 {
     if (on_grid(i, j) == false) return false;
-    if (grid[i][j] == 'X') return false;
+    if (grid[i][j] == '#') return false;
     return true;
 }
 
 int main()
 {
-    int n;
-    cin >> h >> w >> n;
-    pii s;
-    vector<pii> gv(n);
+    cin >> h >> w;
     vector<vector<char>> grid(h, vector<char>(w));
     vector<vector<int>> t(h, vector<int>(w, -1));
+    int whites = 0;
+    int blacks = 0;
     rep(i, h)rep(j, w)
     {
         char ch; cin >> ch;
-        if (isdigit(ch)) gv[ch - '0' - 1] = pii(i, j);
-        else if (ch == 'S') { s = pii(i, j); }
+        if (ch == '.') whites++;
+        else blacks++;
         grid[i][j] = ch;
     }
+    pii s = pii(0, 0);
+    pii g = pii(h-1, w-1);
     int cnt = 0;
-    for (pii g : gv)
+    queue<pii> q; q.push(s);
+    t[s.fi][s.se] = 0; 
+    while (!q.empty())
     {
-        queue<pii> q; q.push(s);
-        vector<vector<int>> tm = t;
-        tm[s.fi][s.se] = 0; 
-        while (!q.empty())
+        pii p = q.front(); q.pop();
+        if (p == g) break;
+        rep(k, 4)
         {
-            pii p = q.front(); q.pop();
-            if (p == g) break;
-            rep(k, 4)
+            if (is_road(p.fi+di[k], p.se+dj[k], grid) && t[p.fi+di[k]][p.se+dj[k]] == -1)
             {
-                if (is_road(p.fi+di[k], p.se+dj[k], grid) && tm[p.fi+di[k]][p.se+dj[k]] == -1)
-                {
-                    q.push(pii(p.fi+di[k], p.se+dj[k]));
-                    tm[p.fi+di[k]][p.se+dj[k]] = tm[p.fi][p.se] + 1;
-                }
+                q.push(pii(p.fi+di[k], p.se+dj[k]));
+                t[p.fi+di[k]][p.se+dj[k]] = t[p.fi][p.se] + 1;
             }
         }
-        cnt += tm[g.fi][g.se];
-        s = pii(g.fi, g.se);
     }
-    cout << cnt << endl;
+    cnt = t[g.fi][g.se];
+    if (cnt == -1) println(-1);
+    else cout << whites - (cnt + 1) << endl;
 }
