@@ -36,24 +36,20 @@ int main()
     cin >> h >> w;
     vector<vector<char>> grid(h, vector<char>(w));
     vector<vector<int>> t(h, vector<int>(w, -1));
-    int whites = 0;
-    int blacks = 0;
+    queue<pii> q;
     rep(i, h)rep(j, w)
     {
         char ch; cin >> ch;
-        if (ch == '.') whites++;
-        else blacks++;
+        if (ch == '#')
+        {
+            q.push(pii(i, j));
+            t[i][j] = 0;
+        }
         grid[i][j] = ch;
     }
-    pii s = pii(0, 0);
-    pii g = pii(h-1, w-1);
-    int cnt = 0;
-    queue<pii> q; q.push(s);
-    t[s.fi][s.se] = 0; 
     while (!q.empty())
     {
         pii p = q.front(); q.pop();
-        if (p == g) break;
         rep(k, 4)
         {
             if (is_road(p.fi+di[k], p.se+dj[k], grid) && t[p.fi+di[k]][p.se+dj[k]] == -1)
@@ -63,7 +59,10 @@ int main()
             }
         }
     }
-    cnt = t[g.fi][g.se];
-    if (cnt == -1) println(-1);
-    else cout << whites - (cnt + 1) << endl;
+    int max_manip = 0;
+    rep(i, h)rep(j, w)
+    {
+        max_manip = max(max_manip, t[i][j]);
+    }
+    println(max_manip);
 }
