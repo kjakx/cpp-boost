@@ -10,89 +10,50 @@ using namespace std;
 #define No println("No")
 #define YES println("YES")
 #define NO println("NO")
-const int di[8] = {-1, 0, 1, 0, -1, -1, 1, 1};
-const int dj[8] = {0, 1, 0, -1, -1, 1, 1, -1};
 
 using pii = pair<int, int>;
 
-bool on_grid(int i, int j, vector<vector<char>>& grid)
+struct Robot
 {
-    if (i < 0 || i >= grid.size()) return false;
-    if (j < 0 || j >= grid[i].size()) return false;
-    return true;
-}
+    int x;
+    int s;
+    int t;
+    Robot(int x, int l)
+    {
+        x = x;
+        s = x - l;
+        t = x + l;
+    }
+    bool covers(Robot& r1)
+    {
+        return t > r1.s;
+    }
+};
 
-bool is_road(int i, int j, vector<vector<char>>& grid)
+bool operator<(const Robot& r1, const Robot& r2)
 {
-    if (on_grid(i, j, grid) == false) return false;
-    if (grid[i][j] == '#') return false;
-    return true;
-}
-
-bool is_wall(int i, int j, vector<vector<char>>& grid)
-{
-    if (on_grid(i, j, grid) == false) return false;
-    if (grid[i][j] == '#') return true;
-    return false;
+    return r1.t < r2.t;
 }
 
 int main()
 {
-    int h, w;
-    cin >> h >> w;
-    vector<vector<char>> grid(h, vector<char>(w));
-    vector<vector<int>> hp(h, vector<int>(w, -1));
-    queue<pii> q;
-    pii g;
-    rep(i, h)rep(j, w)
+    int n;
+    cin >> n;
+    vector<Robot> vr;
+    rep(i, n)
     {
-        char ch; cin >> ch;
-        if (ch == 's') 
-        {
-            q.push(pii(i, j));
-            hp[i][j] = 2;
-        }
-        if (ch == 'g')
-        {
-            g = pii(i, j);
-        }
-        grid[i][j] = ch;
+        int x, l;
+        cin >> x >> l;
+        Robot r = Robot(x, l);
+        vr.push_back(r);
     }
-    while (!q.empty())
+    sort(all(vr));
+    int count = n;
+    Robot prev = vr[0];
+    rep2(i, 1, n)
     {
-        pii p = q.front(); q.pop();
-        if (p == g) break;
-        rep(k, 4)
-        {
-            if (is_road(p.fi+di[k], p.se+dj[k], grid))
-            {
-                if (hp[p.fi+di[k]][p.se+dj[k]] < hp[p.fi][p.se])
-                {
-                    q.push(pii(p.fi+di[k], p.se+dj[k]));
-                    hp[p.fi+di[k]][p.se+dj[k]] = hp[p.fi][p.se];
-                }
-            }
-            else if (is_wall(p.fi+di[k], p.se+dj[k], grid))
-            {
-                if (hp[p.fi][p.se] > 0 && hp[p.fi+di[k]][p.se+dj[k]] < hp[p.fi][p.se] - 1)
-                {
-                    q.push(pii(p.fi+di[k], p.se+dj[k]));
-                    hp[p.fi+di[k]][p.se+dj[k]] = hp[p.fi][p.se] - 1;
-                }
-            }
-        }
+        if (prev.covers(vr[i])) count--;
+        else prev = vr[i];
     }
-    /* print hp on grid
-    rep(i, h)
-    {
-        rep(j, w)
-        {
-            if (hp[i][j] == -1) cout << 'X';
-            else cout << hp[i][j];
-        }
-        cout << endl;
-    }
-    */
-    if (hp[g.fi][g.se] >= 0) YES;
-    else NO;
+    println(count);
 }
