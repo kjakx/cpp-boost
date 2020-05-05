@@ -13,47 +13,49 @@ using namespace std;
 
 using pii = pair<int, int>;
 
-struct Robot
+struct Range
 {
-    int x;
-    int s;
-    int t;
-    Robot(int x, int l)
+    int l;
+    int r;
+    Range(int l, int r)
     {
-        x = x;
-        s = x - l;
-        t = x + l;
+        this->l = l;
+        this->r = r;
     }
-    bool covers(Robot& r1)
+    bool covers(Range& r1)
     {
-        return t > r1.s;
+        return r > r1.l;
     }
 };
 
-bool operator<(const Robot& r1, const Robot& r2)
+bool operator<(const Range& r1, const Range& r2)
 {
-    return r1.t < r2.t;
+    return r1.r < r2.r;
 }
 
 int main()
 {
-    int n;
-    cin >> n;
-    vector<Robot> vr;
-    rep(i, n)
+    int n, m;
+    cin >> n >> m;
+    vector<Range> vr;
+    rep(i, m)
     {
-        int x, l;
-        cin >> x >> l;
-        Robot r = Robot(x, l);
+        int a, b;
+        cin >> a >> b;
+        Range r = Range(a, b);
         vr.push_back(r);
     }
     sort(all(vr));
-    int count = n;
-    Robot prev = vr[0];
-    rep2(i, 1, n)
+    int count = 1;
+    Range prev = vr[0];
+    rep2(i, 1, m)
     {
-        if (prev.covers(vr[i])) count--;
-        else prev = vr[i];
+        if (prev.covers(vr[i])) continue;
+        else
+        {
+            prev = vr[i];
+            count++;
+        }
     }
     println(count);
 }
