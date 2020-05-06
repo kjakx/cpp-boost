@@ -10,52 +10,64 @@ using namespace std;
 #define No println("No")
 #define YES println("YES")
 #define NO println("NO")
-
 using pii = pair<int, int>;
 
-struct Range
+struct BIT
 {
-    int l;
-    int r;
-    Range(int l, int r)
+    vector<int> bit;
+    int n;
+
+    BIT(int n): bit(vector<int>(n+1, 0)), n(n) {}
+
+    int query(int i)
     {
-        this->l = l;
-        this->r = r;
+        int ret = 0;
+        while(i > 0)
+        {
+            ret = max(ret, bit[i]);
+            i -= i&(-i);
+        }
+        return ret;
     }
-    bool covers(Range& r1)
+
+    void update(int i, int x)
     {
-        return r > r1.l;
+        while(i <= n)
+        {
+            bit[i] = max(x, bit[i]);
+            i += i&(-i);
+        }
     }
 };
 
-bool operator<(const Range& r1, const Range& r2)
-{
-    return r1.r < r2.r;
-}
-
 int main()
 {
-    int n, m;
-    cin >> n >> m;
-    vector<Range> vr;
-    rep(i, m)
+    int n;
+    cin >> n;
+    vector<pii> vb;
+    rep(i, n)
     {
-        int a, b;
-        cin >> a >> b;
-        Range r = Range(a, b);
-        vr.push_back(r);
+        int h, w;
+        cin >> h >> w;
+        vb.push_back(pii(h, w));
     }
-    sort(all(vr));
-    int count = 1;
-    Range prev = vr[0];
-    rep2(i, 1, m)
-    {
-        if (prev.covers(vr[i])) continue;
-        else
+    sort(all(vb), 
+        [](pii& p1, pii& p2)
         {
-            prev = vr[i];
-            count++;
-        }
+            if (p1.fi == p2.fi) return p1.se > p2.se;
+            else return p1.fi < p2.fi;
+        });
+    vector<int> count(n);
+    BIT bit = BIT(100000);
+    rep(i, n)
+    {
+        count[i] = bit.query(vb[i].se - 1) + 1;
+        bit.update(vb[i].se, count[i]);
     }
-    println(count);
+    int max_count = 0;
+    rep(i, n)
+    {
+        max_count = max(count[i], max_count);
+    }
+    println(max_count);
 }
