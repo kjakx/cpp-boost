@@ -12,62 +12,48 @@ using namespace std;
 #define NO println("NO")
 using pii = pair<int, int>;
 
-struct BIT
-{
-    vector<int> bit;
-    int n;
-
-    BIT(int n): bit(vector<int>(n+1, 0)), n(n) {}
-
-    int query(int i)
-    {
-        int ret = 0;
-        while(i > 0)
-        {
-            ret = max(ret, bit[i]);
-            i -= i&(-i);
-        }
-        return ret;
-    }
-
-    void update(int i, int x)
-    {
-        while(i <= n)
-        {
-            bit[i] = max(x, bit[i]);
-            i += i&(-i);
-        }
-    }
-};
-
 int main()
 {
-    int n;
-    cin >> n;
-    vector<pii> vb;
-    rep(i, n)
+    string s, t;
+    cin >> s >> t;
+    bool restorable = false;
+    int cnt = s.size() - t.size();
+    while (cnt >= 0)
     {
-        int h, w;
-        cin >> h >> w;
-        vb.push_back(pii(h, w));
-    }
-    sort(all(vb), 
-        [](pii& p1, pii& p2)
+        string st = s;
+        for (int i = t.size() - 1; i >= 0; i--)
         {
-            if (p1.fi == p2.fi) return p1.se > p2.se;
-            else return p1.fi < p2.fi;
-        });
-    vector<int> count(n);
-    BIT bit = BIT(100000);
-    rep(i, n)
-    {
-        count[i] = bit.query(vb[i].se - 1) + 1;
-        bit.update(vb[i].se, count[i]);
+            if (t[i] == st[i+cnt])
+            {
+                if (i == 0)
+                {
+                    restorable = true;
+                }
+            }
+            else if (st[i+cnt] == '?')
+            {
+                st[i+cnt] = t[i];
+                if (i == 0)
+                {
+                    restorable = true;
+                }
+            }
+            else break;
+        }
+        if (restorable)
+        {
+            s = st;
+            break;
+        }
+        cnt--;
     }
-    int max_count = 0;
-    rep(i, n)
+    if (restorable) 
     {
-        max_count = max(count[i], max_count);
+        rep(i, s.size())
+        {
+            if (s[i] == '?') s[i] = 'a';
+        }
+        println(s);
     }
-    println(max_count);
+    else println("UNRESTORABLE");
 }
