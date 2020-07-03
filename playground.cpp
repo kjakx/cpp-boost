@@ -1,7 +1,10 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (int)(n); i++)
+#define rev(i, n) for (int i = (int)(n - 1); i >= 0; i--)
 #define rep2(i, s, n) for (int i = (s); i < (int)(n); i++)
+#define rev2(i, s, n) for (int i = (int)(n) - 1; i >= (int)(s); i--)
+#define bitrep(i, n) for (int i = 0; i < (int)(1 << n); i++)
 #define all(v) v.begin(), v.end()
 #define println(x) cout << x << endl
 #define fi first
@@ -14,46 +17,59 @@ using pii = pair<int, int>;
 
 int main()
 {
-    string s, t;
-    cin >> s >> t;
-    bool restorable = false;
-    int cnt = s.size() - t.size();
-    while (cnt >= 0)
+    int n; cin >> n;
+    vector<int> a(n);
+    vector<vector<int>> x(n, vector<int>());
+    vector<vector<int>> y(n, vector<int>());
+    rep(i, n)
     {
-        string st = s;
-        for (int i = t.size() - 1; i >= 0; i--)
+        cin >> a[i];
+        rep(j, a[i])
         {
-            if (t[i] == st[i+cnt])
+            int xij, yij; cin >> xij >> yij;
+            x[i].push_back(xij - 1); y[i].push_back(yij);
+        }
+    }
+    int maxhon = 0;
+    bitrep(t, n)
+    {
+        set<int> s;
+        bitset<15> bs(t);
+        bool inconsistent = false;
+        rep(i, n)
+        {
+            if (bs[i] == 1)
             {
-                if (i == 0)
+                s.insert(i);
+                rep(j, a[i])
                 {
-                    restorable = true;
+                    if (y[i][j] == 1)
+                    {
+                        if (bs[x[i][j]] == 1)
+                        {
+                            s.insert(x[i][j]);
+                        }
+                        else
+                        {
+                            s.clear();
+                            inconsistent = true;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        if (bs[x[i][j]] == 1)
+                        {
+                            s.clear();
+                            inconsistent = true;
+                            break;
+                        }
+                    }
                 }
             }
-            else if (st[i+cnt] == '?')
-            {
-                st[i+cnt] = t[i];
-                if (i == 0)
-                {
-                    restorable = true;
-                }
-            }
-            else break;
+            if (inconsistent) break;
         }
-        if (restorable)
-        {
-            s = st;
-            break;
-        }
-        cnt--;
+        maxhon = max((int)s.size(), maxhon);
     }
-    if (restorable) 
-    {
-        rep(i, s.size())
-        {
-            if (s[i] == '?') s[i] = 'a';
-        }
-        println(s);
-    }
-    else println("UNRESTORABLE");
+    cout << maxhon << endl;
 }
