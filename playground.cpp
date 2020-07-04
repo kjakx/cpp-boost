@@ -1,75 +1,40 @@
 #include <bits/stdc++.h>
-using namespace std;
+// rep macro
 #define rep(i, n) for (int i = 0; i < (int)(n); i++)
 #define rev(i, n) for (int i = (int)(n - 1); i >= 0; i--)
 #define rep2(i, s, n) for (int i = (s); i < (int)(n); i++)
 #define rev2(i, s, n) for (int i = (int)(n) - 1; i >= (int)(s); i--)
 #define bitrep(i, n) for (int i = 0; i < (int)(1 << n); i++)
+// vector macro
 #define all(v) v.begin(), v.end()
+// math macro
+#define lcm(a, b) a / __gcd(a, b) * b
+// print macro
 #define println(x) cout << x << endl
-#define fi first
-#define se second
 #define Yes println("Yes")
 #define No println("No")
 #define YES println("YES")
 #define NO println("NO")
+using namespace std;
 using pii = pair<int, int>;
 
 int main()
 {
-    int n; cin >> n;
-    vector<int> a(n);
-    vector<vector<int>> x(n, vector<int>());
-    vector<vector<int>> y(n, vector<int>());
-    rep(i, n)
+  int n, m; cin >> n >> m;
+  vector<vector<int>> a(n, vector<int>(m));
+  for (int i = 0; i < n; i++)
+    for (int j = 0; j < m; j++)
+      cin >> a[i][j];
+  long maxtotal = 0;
+  for (int i = 0; i < m - 1; i++)
+    for (int j = i + 1; j < m; j++)
     {
-        cin >> a[i];
-        rep(j, a[i])
-        {
-            int xij, yij; cin >> xij >> yij;
-            x[i].push_back(xij - 1); y[i].push_back(yij);
-        }
+      long total = 0;
+      for (int k = 0; k < n; k++)
+      {
+        total += max(a[k][i], a[k][j]);
+      }
+      maxtotal = max(total, maxtotal);
     }
-    int maxhon = 0;
-    bitrep(t, n)
-    {
-        set<int> s;
-        bitset<15> bs(t);
-        bool inconsistent = false;
-        rep(i, n)
-        {
-            if (bs[i] == 1)
-            {
-                s.insert(i);
-                rep(j, a[i])
-                {
-                    if (y[i][j] == 1)
-                    {
-                        if (bs[x[i][j]] == 1)
-                        {
-                            s.insert(x[i][j]);
-                        }
-                        else
-                        {
-                            s.clear();
-                            inconsistent = true;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        if (bs[x[i][j]] == 1)
-                        {
-                            s.clear();
-                            inconsistent = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (inconsistent) break;
-        }
-        maxhon = max((int)s.size(), maxhon);
-    }
-    cout << maxhon << endl;
+  cout << maxtotal << endl;
 }
