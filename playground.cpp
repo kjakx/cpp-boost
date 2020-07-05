@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+using namespace std;
 // rep macro
 #define rep(i, n) for (int i = 0; i < (int)(n); i++)
 #define rev(i, n) for (int i = (int)(n - 1); i >= 0; i--)
@@ -15,26 +16,42 @@
 #define No println("No")
 #define YES println("YES")
 #define NO println("NO")
-using namespace std;
+// pair macro
+#define x first
+#define y second
 using pii = pair<int, int>;
+using pdd = pair<double, double>;
+
+pii adj(pii src, pii mv)
+{
+    return pii(src.x + mv.x, src.y + mv.y);
+}
 
 int main()
 {
-  int n, m; cin >> n >> m;
-  vector<vector<int>> a(n, vector<int>(m));
-  for (int i = 0; i < n; i++)
-    for (int j = 0; j < m; j++)
-      cin >> a[i][j];
-  long maxtotal = 0;
-  for (int i = 0; i < m - 1; i++)
-    for (int j = i + 1; j < m; j++)
+    int m; cin >> m;
+    vector<pii> p(m);
+    rep(i, m) { cin >> p[i].x >> p[i].y; }
+    int n; cin >> n;
+    vector<pii> q(n);
+    rep(i, n) { cin >> q[i].x >> q[i].y; }
+    sort(all(p));
+    sort(all(q));
+    pii mv;
+    for (int i = 0; i < n; i++)
     {
-      long total = 0;
-      for (int k = 0; k < n; k++)
-      {
-        total += max(a[k][i], a[k][j]);
-      }
-      maxtotal = max(total, maxtotal);
+        mv = pii(q[i].x - p[0].x, q[i].y - p[0].y);
+        bool success = true;
+        for (int j = 1; j < m; j++)
+        {
+            pii r = adj(p[j], mv);
+            if (*lower_bound(all(q), r) != r)
+            {
+                success = false;
+                break;
+            }
+        }  
+        if (success) break;
     }
-  cout << maxtotal << endl;
+    cout << mv.x << " " << mv.y << endl;
 }
