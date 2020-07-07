@@ -8,6 +8,10 @@ using namespace std;
 #define bitrep(i, n) for (int i = 0; i < (int)(1 << n); i++)
 // vector macro
 #define all(v) v.begin(), v.end()
+using vi = vector<int>;
+using vb = vector<bool>;
+using vvi = vector<vector<int>>;
+using vvb = vector<vector<bool>>;
 // math macro
 #define lcm(a, b) a / __gcd(a, b) * b
 // print macro
@@ -22,36 +26,33 @@ using namespace std;
 using pii = pair<int, int>;
 using pdd = pair<double, double>;
 
-pii adj(pii src, pii mv)
-{
-    return pii(src.x + mv.x, src.y + mv.y);
-}
-
 int main()
 {
-    int m; cin >> m;
-    vector<pii> p(m);
-    rep(i, m) { cin >> p[i].x >> p[i].y; }
-    int n; cin >> n;
-    vector<pii> q(n);
-    rep(i, n) { cin >> q[i].x >> q[i].y; }
-    sort(all(p));
-    sort(all(q));
-    pii mv;
-    for (int i = 0; i < n; i++)
+    int n, m; cin >> n >> m;
+    vvb friends(n, vb(n, false));
+    rep(i, m)
     {
-        mv = pii(q[i].x - p[0].x, q[i].y - p[0].y);
-        bool success = true;
-        for (int j = 1; j < m; j++)
-        {
-            pii r = adj(p[j], mv);
-            if (*lower_bound(all(q), r) != r)
-            {
-                success = false;
-                break;
-            }
-        }  
-        if (success) break;
+        int a, b; cin >> a >> b; a--; b--;
+        friends[a][b] = friends[b][a] = true;
     }
-    cout << mv.x << " " << mv.y << endl;
+    int max_gs = 0;
+    bitrep(b, n)
+    {
+        bitset<12> bs(b);
+        int gs = bs.count();
+        rep(i, n-1)
+        {
+            rep2(j, i+1, n)
+            {
+                if ((bs[i] == 1 && bs[j] == 1) && friends[i][j] == false)
+                {
+                    gs = -1;
+                    break;
+                }
+            }
+            if (gs < 0) break;
+        }
+        max_gs = max(gs, max_gs);
+    }
+    cout << max_gs << endl;
 }
