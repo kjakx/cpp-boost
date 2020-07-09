@@ -15,6 +15,8 @@ using ll = int64_t;
 #define all(v) v.begin(), v.end()
 using  vi = vector<int>;
 using vvi = vector<vector<int>>;
+using  vu = vector<size_t>;
+using vvu = vector<vector<size_t>>;
 using  vl = vector<ll>;
 using vvl = vector<vector<ll>>;
 using  vd = vector<double>;
@@ -46,25 +48,19 @@ using pdd = pair<double, double>;
 int main()
 {
     int n; cin >> n;
-    vi a(n), b(n), c(n); rep(i, n) cin >> a[i];rep(i, n) cin >> b[i];rep(i, n) cin >> c[i];
-    sort(all(a));
-    sort(all(b));
-    sort(all(c));
-    int sum = 0;
-    auto itr_ua = a.begin();
-    while (itr_ua != a.end())
+    vi a(n), b(n), c(n); 
+    rep(i, n) cin >> a[i]; rep(i, n) cin >> b[i]; rep(i, n) cin >> c[i];
+    sort(all(a));sort(all(b));sort(all(c));
+    // max of sum : (10^5)^3 = 10^15
+    ll sum = 0;
+    auto ib = b.begin();
+    // O(nlogn)
+    while (ib != b.end())
     {
-        auto lb = upper_bound(all(b), *itr_ua);
-        if (lb == b.end()) break;
-        auto itr_ub = lb;
-        while (itr_ub != b.end())
-        {
-            auto lc = upper_bound(all(c), *itr_ub);
-            if (lc == c.end()) break;
-            sum += c.end() - lc;
-            itr_ub++;
-        }
-        itr_ua++;
+        auto ia = lower_bound(all(a), *ib);
+        auto ic = upper_bound(all(c), *ib);
+        sum += (ia - a.begin()) * (c.end() - ic);
+        ib++;
     }
     cout << sum << endl;
 }

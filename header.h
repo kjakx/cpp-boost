@@ -15,6 +15,8 @@ using ll = int64_t;
 #define all(v) v.begin(), v.end()
 using  vi = vector<int>;
 using vvi = vector<vector<int>>;
+using  vu = vector<size_t>;
+using vvu = vector<vector<size_t>>;
 using  vl = vector<ll>;
 using vvl = vector<vector<ll>>;
 using  vd = vector<double>;
