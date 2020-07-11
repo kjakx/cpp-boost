@@ -44,43 +44,46 @@ using pdd = pair<double, double>;
 #define NO println("NO")
 // memo
 // desc sort: sort(vec.begin(), vec.end(), greater<int>());#include "header.h"
-
+#include <iostream>
+#include <vector>
 using namespace std;
 
-void dfs(int n, vector<vector<int>>& ki, vector<int>& c, vector<bool>& seen)
+void dfs(int n, int &t, vector<vector<int>>& g, vector<int>& d, vector<int>& f, vector<bool>& seen)
 {
-  if (ki[n].size() == 0) return;
-  seen[n] = true;
-  for (int i = 0; i < ki[n].size(); i++)
-  {
-    if (seen[ki[n][i]]) continue;
-    c[ki[n][i]] += c[n];
-    dfs(ki[n][i], ki, c, seen);
-  }
+    t++;
+    if (d[n] == 0) d[n] = t;
+    seen[n] = true;
+    for (int i = 0; i < g[n].size(); i++)
+    {
+        if (seen[g[n][i]]) continue;
+        dfs(g[n][i], t, g, d, f, seen);
+    }
+    t++;
+    f[n] = t;
 }
 
 int main()
 {
-  int n, q; cin >> n >> q;
-  vector<vector<int>> ki(n, vector<int>());
-  for (int i = 0; i < n - 1; i++)
-  {
-    int a, b; cin >> a >> b; a--; b--;
-    ki[a].push_back(b);
-    ki[b].push_back(a);
-  } 
-  vector<int> c(n, 0);
-  for (int i = 0; i < q; i++)
-  {
-    int p, x; cin >> p >> x; p--;
-    c[p] += x;
-  }
-  vector<bool> seen(n, false);
-  dfs(0, ki, c, seen);
-  for (int i = 0; i < n; i++)
-  {
-    cout << c[i];
-    if (i == n - 1) cout << endl;
-    else cout << " ";
-  }
+    int n; cin >> n;
+    vector<vector<int>> g(n, vector<int>());
+    for (int i = 0; i < n; i++)
+    {
+        int u, k; cin >> u >> k; u--;
+        for (int j = 0; j < k; j++)
+        {
+            int v; cin >> v; v--;
+            g[u].push_back(v);
+        }
+    } 
+    vector<int> d(n, 0);
+    vector<int> f(n, 0);
+    vector<bool> seen(n, false);
+    int t = 0;
+    for (int i = 0; i < n; i++)
+        if (seen[i] == false)
+            dfs(i, t, g, d, f, seen);
+    for (int i = 0; i < n; i++)
+    {
+        cout << i + 1 << " " <<  d[i] << " " << f[i] << endl;
+    }
 }
