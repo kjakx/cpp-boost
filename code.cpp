@@ -43,43 +43,49 @@ using pdd = pair<double, double>;
 #define YES println("YES")
 #define NO println("NO")
 // memo
-// desc sort: sort(vec.begin(), vec.end(), greater<int>());#include "header.h"
-
-void dfs(int n, vector< vector<int> >& ki, vector<int>& c, vector<bool>& seen)
-{
-    seen[n] = true;
-    rep(i, ki[n].size())
-    {
-        if (seen[ki[n][i]] == false)
-        {
-            c[ki[n][i]] += c[n];
-            dfs(ki[n][i], ki, c, seen);
-        }
-    }
-}
-
+// desc sort: sort(vec.begin(), vec.end(), greater<int>());//#include "header.h"
+#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
 int main()
 {
-    int n, q; cin >> n >> q;
-    vector< vector<int> > ki(n, vector<int>());
-    rep(i, n - 1)
+    int n; cin >> n;
+    vector< vector<int> > g(n, vector<int>());
+    for (int i = 0; i < n; i++)
     {
-        int a, b; cin >> a >> b; a--; b--; 
-        ki[a].push_back(b);
-        ki[b].push_back(a);
-    }
-    vector<int> c(n, 0);
-    rep(i, q)
-    {
-        int p, x; cin >> p >> x; p--;
-        c[p] += x;
+        int u, k; cin >> u >> k; u--;
+        for (int j = 0; j < k; j++)
+        {
+            int v; cin >> v; v--;
+            g[i].push_back(v);
+        } 
     }
     vector<bool> seen(n, false);
-    dfs(0, ki, c, seen);
-    rep(i, n)
+    vector<int> d(n, -1); d[0] = 0;
+    queue<int> q;
+    q.push(0);
+    int depth = 0;
+    while (!q.empty())
     {
-        cout << c[i];
-        if (i == n - 1) cout << endl;
-        else cout << " ";
+        depth++;
+        queue<int> qt;
+        while (!q.empty())
+        {
+            qt.push(q.front()); 
+            q.pop();
+        }
+        while (!qt.empty())
+        {
+            int x = qt.front(); qt.pop();
+            seen[x] = true;
+            for (int i = 0; i < g[x].size(); i++)
+            {
+                if(d[g[x][i]] == -1) d[g[x][i]] = depth;
+                if (seen[g[x][i]] == false) q.push(g[x][i]);
+            }
+        }
     }
+    for (int i = 0; i < n; i++)
+        cout << i + 1 << " " << d[i] << endl;
 }
