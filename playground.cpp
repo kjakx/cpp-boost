@@ -9,34 +9,33 @@ bool ongrid(int h, int w, vector< vector<int> >& g)
     return false;
 }
 
-bool dfs(int h, int w, vector< vector<int> >& g, vector< vector<bool> >& seen)
+int dfs(int n, int h, int w, vector< vector<int> >& g, vector< vector<bool> >& seen)
 {
+    n++;
     seen[h][w] = true;
-    if (g[h][w] == 0) return false;
-    for (int i = 0; i < 8; i++)
+    int ret = n;
+    for (int i = 0; i < 4; i++)
     {
-        if (ongrid(h+di[i], w+dj[i], g) && seen[h+di[i]][w+dj[i]] == false)
-            dfs(h+di[i], w+dj[i], g, seen);
+        if (ongrid(h+di[i], w+dj[i], g) && seen[h+di[i]][w+dj[i]] == false && g[h+di[i]][w+dj[i]] == 1)
+            ret = max(dfs(n, h+di[i], w+dj[i], g, seen), ret);
     }
-    return true;
+    return ret;
 }
 
 int main()
 {
-    while (true)
-    {
-        int w, h; cin >> w >> h;
-        if (w == 0 && h == 0) break;
-        vector< vector<int> > g(h, vector<int>(w));
-        for (int i = 0; i < h; i++)
-            for (int j = 0; j < w; j++)
-                { int c; cin >> c; g[i][j] = c;}
-        vector< vector<bool> > seen(h, vector<bool>(w, false));
-        int cnt = 0;
-        for (int i = 0; i < h; i++)
-            for (int j = 0; j < w; j++)
-                if (seen[i][j] == false)
-                    if (dfs(i, j, g, seen) == true) cnt++;
-        cout << cnt << endl;
-    }
+    int w, h; cin >> w >> h;
+    vector< vector<int> > g(h, vector<int>(w));
+    for (int i = 0; i < h; i++)
+        for (int j = 0; j < w; j++)
+            { int c; cin >> c; g[i][j] = c;}
+    int cnt = 0;
+    for (int i = 0; i < h; i++)
+        for (int j = 0; j < w; j++)
+        {
+            vector< vector<bool> > seen(h, vector<bool>(w, false));
+            if (g[i][j] == 1) 
+                cnt = max(dfs(0, i, j, g, seen), cnt);
+        }
+    cout << cnt << endl;
 }
