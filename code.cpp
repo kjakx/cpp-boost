@@ -45,38 +45,41 @@ using pdd = pair<double, double>;
 // memo
 // desc sort: sort(vec.begin(), vec.end(), greater<int>());#include "header.h"
 
-bool ongrid(int h, int w, vector< vector<int> >& g)
+void dfs(int n, vector< vector<int> >& ki, vector<int>& c, vector<bool>& seen)
 {
-    if (h >= 0 && h < (int)g.size() && w >= 0 && w < (int)g[0].size()) return true;
-    return false;
-}
-
-int dfs(int n, int h, int w, vector< vector<int> >& g, vector< vector<bool> >& seen)
-{
-    n++;
-    seen[h][w] = true;
-    int ret = n;
-    for (int i = 0; i < 4; i++)
-        if (ongrid(h+di[i], w+dj[i], g) && seen[h+di[i]][w+dj[i]] == false && g[h+di[i]][w+dj[i]] == 1)
-            ret = max(dfs(n, h+di[i], w+dj[i], g, seen), ret);
-    seen[h][w] = false;
-    return ret;
+    seen[n] = true;
+    rep(i, ki[n].size())
+    {
+        if (seen[ki[n][i]] == false)
+        {
+            c[ki[n][i]] += c[n];
+            dfs(ki[n][i], ki, c, seen);
+        }
+    }
 }
 
 int main()
 {
-    int w, h; cin >> w >> h;
-    vector< vector<int> > g(h, vector<int>(w));
-    for (int i = 0; i < h; i++)
-        for (int j = 0; j < w; j++)
-            { int c; cin >> c; g[i][j] = c;}
-    int cnt = 0;
-    for (int i = 0; i < h; i++)
-        for (int j = 0; j < w; j++)
-        {
-            vector< vector<bool> > seen(h, vector<bool>(w, false));
-            if (g[i][j] == 1)
-                cnt = max(dfs(0, i, j, g, seen), cnt);
-        }
-    cout << cnt << endl;
+    int n, q; cin >> n >> q;
+    vector< vector<int> > ki(n, vector<int>());
+    rep(i, n - 1)
+    {
+        int a, b; cin >> a >> b; a--; b--; 
+        ki[a].push_back(b);
+        ki[b].push_back(a);
+    }
+    vector<int> c(n, 0);
+    rep(i, q)
+    {
+        int p, x; cin >> p >> x; p--;
+        c[p] += x;
+    }
+    vector<bool> seen(n, false);
+    dfs(0, ki, c, seen);
+    rep(i, n)
+    {
+        cout << c[i];
+        if (i == n - 1) cout << endl;
+        else cout << " ";
+    }
 }
