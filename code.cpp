@@ -44,13 +44,10 @@ using pdd = pair<double, double>;
 #define NO println("NO")
 // memo
 // desc sort: sort(vec.begin(), vec.end(), greater<int>());#include "header.h"
-#include <iostream>
-#include <vector>
-using namespace std;
 
 bool ongrid(int h, int w, vector< vector<int> >& g)
 {
-    if (h >= 0 && h < g.size() && w >= 0 && w < g[0].size()) return true;
+    if (h >= 0 && h < (int)g.size() && w >= 0 && w < (int)g[0].size()) return true;
     return false;
 }
 
@@ -60,10 +57,9 @@ int dfs(int n, int h, int w, vector< vector<int> >& g, vector< vector<bool> >& s
     seen[h][w] = true;
     int ret = n;
     for (int i = 0; i < 4; i++)
-    {
         if (ongrid(h+di[i], w+dj[i], g) && seen[h+di[i]][w+dj[i]] == false && g[h+di[i]][w+dj[i]] == 1)
             ret = max(dfs(n, h+di[i], w+dj[i], g, seen), ret);
-    }
+    seen[h][w] = false;
     return ret;
 }
 
@@ -78,11 +74,9 @@ int main()
     for (int i = 0; i < h; i++)
         for (int j = 0; j < w; j++)
         {
-            if (g[i][j] == 1) 
-            {
-                vector< vector<bool> > seen(h, vector<bool>(w, false));
+            vector< vector<bool> > seen(h, vector<bool>(w, false));
+            if (g[i][j] == 1)
                 cnt = max(dfs(0, i, j, g, seen), cnt);
-            }
         }
     cout << cnt << endl;
 }
