@@ -44,6 +44,11 @@ using pdd = pair<double, double>;
 #define NO println("NO")
 // memo
 // desc sort: sort(vec.begin(), vec.end(), greater<int>());
+#include <cmath>
+const int dio[6] = {  1,  0, -1,  0, -1,  1};
+const int djo[6] = {  0,  1,  0, -1,  1,  1};
+const int die[6] = {  1,  0, -1,  0, -1,  1};
+const int dje[6] = {  0,  1,  0, -1, -1, -1};
 
 bool on_grid(int i, int j, int r, int c)
 {
@@ -52,48 +57,81 @@ bool on_grid(int i, int j, int r, int c)
 
 int main()
 {
-    int h, w, n; cin >> h >> w >> n;
-    vvc g(h, vc(w));
-    pii s;
-    vector<pii> e(n);
+    int w, h; cin >> w >> h;
+    vvi g(h, vi(w));
     rep(i, h)
         rep(j, w)
-        {
             cin >> g[i][j];
-            if (g[i][j] == 'S') s = pii(i, j);
-            if (isdigit(g[i][j])) e[g[i][j] - '0' - 1] = pii(i, j);
-        }
     
-    int t = 0;
-    rep(i, n)
+    vvb seen(h, vb(w, false));
+    rep(i, h)rep(j, w)
     {
-        vvb seen(h, vb(w, false));
-        seen[s.fi][s.sj] = true;
-        queue<pii> q;
-        q.push(s);
-        while (!q.empty())
+        if (g[i][j] == 0 && seen[i][j] == false)
         {
-            queue<pii> qt;
+            bool flag = true;
+            queue<pii> q;
+            q.push(pii(i, j));
+            vvb seent(h, vb(w, false));
             while (!q.empty())
             {
-                qt.push(q.front()); q.pop();
-            }
-            while (!qt.empty())
-            {
-                pii now = qt.front(); qt.pop();
-                rep(i, 4)
-                    if (on_grid(now.fi+di[i], now.sj+dj[i], h, w) 
-                        && seen[now.fi+di[i]][now.sj+dj[i]] == false 
-                        && g[now.fi+di[i]][now.sj+dj[i]] != 'X')
-                    {
-                        seen[now.fi+di[i]][now.sj+dj[i]] = true;
-                        q.push(pii(now.fi+di[i], now.sj+dj[i]));
+                pii now = q.front(); q.pop();
+                seen[now.fi][now.sj] = true;
+                seent[now.fi][now.sj] = true;
+                if (now.fi % 2 == 0)
+                {
+                    rep(k, 6)
+                    {   
+                        if (on_grid(i+dio[k], j+djo[k], h, w))
+                        {
+                            if (g[i+dio[k]][j+djo[k]] == 0 && seen[i+dio[k]][j+djo[k]] == false)
+                                q.push(pii(i+dio[k], j+djo[k]));
+                        }
+                        else
+                        {
+                            flag = false;
+                        }
                     }
+                }
+                else
+                {
+                    rep(k, 6)
+                    {
+                        if (on_grid(i+die[k], j+dje[k], h, w))
+                        {
+                            if (g[i+die[k]][j+dje[k]] == 0 && seen[i+die[k]][j+dje[k]] == false)
+                                q.push(pii(i+die[k], j+dje[k]));
+                        }
+                        else
+                        {
+                            flag = false;
+                        }
+                    }
+                }
             }
-            t++;
-            if (seen[e[i].fi][e[i].sj] == true) break;
+            if (flag == true) 
+            {
+                rep(a, h)rep(b, w)
+                {
+                    if (seent[a][b] == true) g[a][b] = 1;
+                }
+            }
+            else
+            {
+                rep(a, h)rep(b, w)
+                {
+                    if (seent[a][b] == true) g[a][b] = 2;
+                }
+            }
         }
-        s = e[i];
     }
-    cout << t << endl;
+    cout<<endl;
+    rep(i, h)
+    {
+        rep(j, w)
+        {
+            cout << g[i][j] << " ";
+        }
+        cout << endl;
+    }
+    return 0;
 }
