@@ -1,10 +1,5 @@
 #include "header.h"
 
-const int dio[6] = {  1,  0, -1,  0, -1,  1};
-const int djo[6] = {  0,  1,  0, -1,  1,  1};
-const int die[6] = {  1,  0, -1,  0, -1,  1};
-const int dje[6] = {  0,  1,  0, -1, -1, -1};
-
 bool on_grid(int i, int j, int r, int c)
 {
     return (i >= 0 && i < r && j >= 0 && j < c);
@@ -12,129 +7,46 @@ bool on_grid(int i, int j, int r, int c)
 
 int main()
 {
-    int w, h; cin >> w >> h;
-    vvi g(h, vi(w));
+    int h, w; cin >> h >> w;
+    vvc g(h, vc(w));
+    int num_walls = 0;
     rep(i, h)
         rep(j, w)
+        {
             cin >> g[i][j];
-    // fill hollows
+            if (g[i][j] == '#') num_walls++;
+        }
+    queue<pii> q;
+    q.push(pii(0, 0));
     vvb seen(h, vb(w, false));
-    rep(i, h)rep(j, w)
-    {
-        if (g[i][j] == 0 && seen[i][j] == false)
-        {
-            bool flag = true;
-            queue<pii> q;
-            q.push(pii(i, j));
-            vvb seent(h, vb(w, false));
-            seen[i][j] = true;
-            seent[i][j] = true;
-            while (!q.empty())
-            {
-                pii now = q.front(); q.pop();
-                if (now.fi % 2 == 0)
-                {
-                    rep(k, 6)
-                    {   
-                        if (on_grid(now.fi+dio[k], now.sj+djo[k], h, w))
-                        {
-                            if (g[now.fi+dio[k]][now.sj+djo[k]] == 0 && seent[now.fi+dio[k]][now.sj+djo[k]] == false)
-                            {
-                                seen[now.fi+dio[k]][now.sj+djo[k]] = true;
-                                seent[now.fi+dio[k]][now.sj+djo[k]] = true;
-                                q.push(pii(now.fi+dio[k], now.sj+djo[k]));
-                            }
-                        }
-                        else
-                        {
-                            flag = false;
-                        }
-                    }
-                }
-                else
-                {
-                    rep(k, 6)
-                    {
-                        if (on_grid(now.fi+die[k], now.sj+dje[k], h, w))
-                        {
-                            if (g[now.fi+die[k]][now.sj+dje[k]] == 0 && seent[now.fi+die[k]][now.sj+dje[k]] == false)
-                            {
-                                seen[now.fi+die[k]][now.sj+dje[k]] = true;
-                                seent[now.fi+die[k]][now.sj+dje[k]] = true;
-                                q.push(pii(now.fi+die[k], now.sj+dje[k]));
-                            }
-                        }
-                        else
-                        {
-                            flag = false;
-                        }
-                    }
-                }
-            }
-            if (flag == true) 
-            {
-                rep(a, h)rep(b, w)
-                {
-                    if (seent[a][b] == true) g[a][b] = 1;
-                }
-            }
-            else
-            {
-                rep(a, h)rep(b, w)
-                {
-                    if (seent[a][b] == true) g[a][b] = -1;
-                }
-            }
-        }
-    }
+    seen[0][0] = true;
     int cnt = 0;
-    vvb seen2(h, vb(w, false));
-    rep(i, h)rep(j, w)
+    bool success = false;
+    while (!q.empty())
     {
-        if (g[i][j] == 1 && seen2[i][j] == false)
+        queue<pii> qt;
+        while (!q.empty())
         {
-            queue<pii> q;
-            q.push(pii(i, j));
-            vvb seent2(h, vb(w, false));
-            seen2[i][j] = true;
-            while (!q.empty())
+            qt.push(q.front()); q.pop();
+        }
+        while (!qt.empty())
+        {
+            pii now = qt.front(); qt.pop();
+            rep(i, 4)
             {
-                pii now = q.front(); q.pop();
-                int nbr = 0;
-                if (now.fi % 2 == 0)
+                if (on_grid(now.fi+di[i], now.sj+dj[i], h, w)
+                && g[now.fi+di[i]][now.sj+dj[i]] == '.'
+                && seen[now.fi+di[i]][now.sj+dj[i]] == false)
                 {
-                    rep(k, 6)
-                    {   
-                        if (on_grid(now.fi+dio[k], now.sj+djo[k], h, w) && g[now.fi+dio[k]][now.sj+djo[k]] == 1)
-                        {
-                            nbr++;
-                            if (seen2[now.fi+dio[k]][now.sj+djo[k]] == false)
-                            {
-                                seen2[now.fi+dio[k]][now.sj+djo[k]] = true;
-                                q.push(pii(now.fi+dio[k], now.sj+djo[k]));
-                            }
-                        }
-                    }
+                    seen[now.fi+di[i]][now.sj+dj[i]] = true;
+                    q.push(pii(now.fi+di[i], now.sj+dj[i]));
                 }
-                else
-                {
-                    rep(k, 6)
-                    {
-                        if (on_grid(now.fi+die[k], now.sj+dje[k], h, w) && g[now.fi+die[k]][now.sj+dje[k]] == 1)
-                        {
-                            nbr++;
-                            if (seen2[now.fi+die[k]][now.sj+dje[k]] == false)
-                            {
-                                seen2[now.fi+die[k]][now.sj+dje[k]] = true;
-                                q.push(pii(now.fi+die[k], now.sj+dje[k]));
-                            }
-                        }
-                    }
-                }
-                cnt += 6 - nbr;
             }
         }
+        cnt++;
+        if (seen[h-1][w-1] == true) { success = true; break; }
     }
-    cout << cnt << endl;
-    return 0;
+    int ans = h * w - num_walls - (cnt + 1);
+    if (success) println(ans);
+    else println(-1);
 }
